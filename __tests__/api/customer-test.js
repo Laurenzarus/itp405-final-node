@@ -66,7 +66,7 @@ it('should throw status code 422 since firstname is missing', () => {
 });
 
 //Post working
-it('should return a customer object', () => {
+it('should return a customer object after successful insertion', () => {
     return frisby.post('https://itp405-final-nodejs.herokuapp.com/api/customers', {
         firstname: "Laurence",
         lastname : "Fong",
@@ -80,4 +80,17 @@ it('should return a customer object', () => {
     .expect('json', 'city', 'San Francisco')
     .expect('json', 'birthdate', '1998-10-14');
 });
+
+//Delete nonexisting record
+it('should return a 404 trying to delete nonexistent customer', () => {
+    return frisby.delete('https://itp405-final-nodejs.herokuapp.com/api/customers/0')
+        .expect('status', 404);
+})
+
+//Delete existing record
+it('should return a 404 after deleting nonexistent customer', () => {
+    return frisby.delete('https://itp405-final-nodejs.herokuapp.com/api/customers/1')
+        .expect('status', 404);
+})
+
 
