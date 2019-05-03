@@ -14,6 +14,66 @@ const app = express();
 
 app.use(bodyParser.json());
 
+//Relationships
+Customer.hasMany(Order, {
+    foreignKey: 'CustomerID'
+})
+
+Order.hasOne(Customer, {
+    foreignKey: 'CustomerID'
+});
+
+Order.hasOne(Shipper, {
+    foreignKey: 'ShipperID'
+});
+
+Order.hasOne(Amount, {
+    foreignKey: 'AmountID'
+})
+
+//ORDERS
+app.get('/api/orders', function(request, response) {
+    Order.findAll({attributes: {exclude : ["CustomerID"]}}).then((orders) => {
+      response.json(orders);
+    });
+
+});
+app.get('/api/orders/:id', function(request, response) {
+  
+    let {id} = request.params;
+    
+    Order.findByPk(id, {include: [Customer, Shipper, Amount]}).then((order) => {
+      if (order) {
+        response.json(order);
+      }
+      else {
+        response.status(404).send();
+      }
+    });
+});
+
+app.post('/api/orders', function(request, response) {
+    Order.create({
+      customerID : request.body.customerID,
+      item : request.body.item,
+      ordered : request.body.orderDate,
+      shipped : request.body.shipDate,
+      shipperID : request.body.shipperID,
+      amountID : request.body.amountID
+    }).then((order) => {
+      response.json(order);
+    }, (validation) => {
+      response.status(422).json({
+        errors: validation.errors.map((error) => {
+          return {
+            attribute: error.path,
+            message: error.message
+          }
+        })
+      });
+    });
+})
+
 //CUSTOMERS
 app.get('/api/customers', function(request, response) {
 
@@ -27,7 +87,7 @@ app.get('/api/customers/:id', function(request, response) {
   
   let {id} = request.params;
   
-  Customer.findByPk(id).then((customer) => {
+  Customer.findByPk(id, {include: [Order]}).then((customer) => {
     if (customer) {
       response.json(customer);
     }
@@ -57,6 +117,25 @@ app.post('/api/customers', function(request, response) {
       });
     });
 })
+
+app.delete('/api/customers', function(request, response) {
+    let {id} = request.params;
+
+    Customer
+        .findByPk(id)
+        .then((customer) => {
+            if (customer) {
+                return customer.setOrders([]).then(() => {
+                    return customer.destroy();
+                });
+            }
+            else {
+                return Promise.reject();
+            }
+        }).then(() => {
+            response.status(404).send();
+    });
+});
 
 app.patch('/api/customers/:id', function(request, response) {
 
