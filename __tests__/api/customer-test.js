@@ -66,8 +66,9 @@ it('should throw status code 422 since firstname is missing', () => {
 });
 
 //Post working
-it('should throw status code 422 since firstname is missing', () => {
+it('should return a customer object', () => {
     return frisby.post('https://itp405-final-nodejs.herokuapp.com/api/customers', {
+        firstname: "Laurence",
         lastname : "Fong",
         title : "Dark Knight",
         city : "San Francisco",
