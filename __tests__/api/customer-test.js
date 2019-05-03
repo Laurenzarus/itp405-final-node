@@ -38,7 +38,7 @@ it('should return status code of 404 when the customer is not found', () => {
 //check success patch
 it('should successfully patch a track and return status code and updates', () => {
 
-    return frisby.patch('https://itp405-final-nodejs.herokuapp.com/api/customers/1', {
+    return frisby.patch('https://itp405-final-nodejs.herokuapp.com/api/customers/4', {
         firstname: "Laurence",
         lastname: "Fong",
         title: "Dark Knight",
@@ -81,16 +81,16 @@ it('should return a customer object after successful insertion', () => {
     .expect('json', 'birthdate', '1998-10-14');
 });
 
-//Delete nonexisting record
-it('should return a 404 trying to delete nonexistent customer', () => {
-    return frisby.delete('https://itp405-final-nodejs.herokuapp.com/api/customers/0')
-        .expect('status', 404);
-})
+// //Delete nonexisting record
+// it('should return a 404 trying to delete nonexistent customer', () => {
+//     return frisby.delete('https://itp405-final-nodejs.herokuapp.com/api/customers/0')
+//         .expect('status', 404);
+// })
 
-//Delete existing record
-it('should return a 404 after deleting nonexistent customer', () => {
-    return frisby.delete('https://itp405-final-nodejs.herokuapp.com/api/customers/1')
-        .expect('status', 404);
-})
+// //Delete existing record
+// it('should return a 404 after deleting existing customer', () => {
+//     return frisby.delete('https://itp405-final-nodejs.herokuapp.com/api/customers/1')
+//         .expect('status', 404);
+// })
 
 
