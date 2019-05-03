@@ -77,7 +77,7 @@ app.post('/api/orders', function(request, response) {
 //CUSTOMERS
 app.get('/api/customers', function(request, response) {
 
-    Customer.findAll().then((customers) => {
+    Customer.findAll({attributes : {exclude: ["CustomerID"]}}).then((customers) => {
       response.json(customers);
     });
 
@@ -117,15 +117,20 @@ app.post('/api/customers', function(request, response) {
       });
     });
 })
-
-app.delete('/api/customers', function(request, response) {
+//doesn't return anything
+app.delete('/api/customers/:id', function(request, response) {
+    
     let {id} = request.params;
 
     Customer
         .findByPk(id)
         .then((customer) => {
             if (customer) {
-                return customer.setOrders([]).then(() => {
+                return Order.destroy({
+                    where: {
+                        CustomerID : customer.id
+                    }
+                }).then(() => {
                     return customer.destroy();
                 });
             }
@@ -168,7 +173,7 @@ app.patch('/api/customers/:id', function(request, response) {
 
 app.get('/api/shippers', function(request, response) {
 
-    Shipper.findAll().then((shippers) => {
+    Shipper.findAll({attributes: {exclude: ['ShipperID']}}).then((shippers) => {
       response.json(shippers);
     });
 
@@ -190,7 +195,7 @@ app.get('/api/shippers/:id', function(request, response) {
 
 app.get('/api/amounts', function(request, response) {
 
-    Amount.findAll().then((amounts) => {
+    Amount.findAll({attributes: {exclude: ['AmountID']}}).then((amounts) => {
       response.json(amounts);
     });
 
